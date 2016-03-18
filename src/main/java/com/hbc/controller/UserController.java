@@ -31,12 +31,14 @@ public class UserController extends BaseController {
 			}
 		}else{
 			session.setAttribute("UserError", "登陆失败！");
-			return "redirect:/index.jsp";
+			return "redirect:/ulogin.jsp";
 		}
 	}
 	
 	@RequestMapping(value="register")
 	public String register(User user){
+		System.out.println("register");
+		System.out.println(user);
 		userService.save(user);
 		return "redirect:/ulogin.jsp";
 	}
@@ -50,6 +52,7 @@ public class UserController extends BaseController {
 	
 	@RequestMapping(value="/loginOut")
 	public String loginOut(){
+		System.out.println("login out ");
 		session.removeAttribute("user");
 		session.removeAttribute("userError");
 		return "redirect:/ulogin.jsp";

@@ -3,10 +3,10 @@
 <html>
 	<head></head>
 	<body>
-		<form action="${pageContext.request.contextPath}/user/login.mvc">
+		<form action="${pageContext.request.contextPath}/user/register.mvc">
 			用户名：<input name="userLogin" type="text" /><br>
 			密码    ：<input name="userPassword" type="password" /><br>
-			<input type="submit">
+			<input type="submit" value="注册">
 		</form>
 	</body>
 </html>
