@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 设置缓存总开关 -->
+	<settings>
+		<setting name="cacheEnabled" value="true"/>
+	</settings>
+	<!-- 注册别名 -->
+	<typeAliases>
+		<package name="com.hbc.model"/>
+	</typeAliases>
+	<!-- 配置自定义类型转化器 -->
+	<!-- <typeHandlers>
+		<typeHandler javaType="String" jdbcType="TIMESTAMP" handler="com.can.util.DateTypeHandler"/>
+	</typeHandlers> -->
+	
+	<mappers>
+		<mapper resource="com/hbc/model/UserMapper.xml"/>
+	</mappers>
+</configuration>

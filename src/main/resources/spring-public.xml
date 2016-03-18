@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+	<context:component-scan base-package="com.hbc.dao.impl" />
+	<context:component-scan base-package="com.hbc.service.impl" />
+	<context:component-scan base-package="com.hbc.util" />
+
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	   <property name="location" value="classpath:conn.properties" />
+	</bean>
+	
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${driver}" />
+		<property name="jdbcUrl" value="${url}" />
+		<property name="user" value="${username}" />
+		<property name="password" value="${password}" />
+	</bean>
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- 可以删除mybatis中数据库连接信息 -->
+		<property name="configLocation" value="classpath:myBatis.cfg.xml" />
+	</bean>
+	
+	<!-- 真正里面的sqlsession是多例的,而且在操作数据库的时候访问的缓存 -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	
+	<!-- jdbc事务管理器,不可能依赖mybatis的SqlSessionFactoryBean, 事务管理器只需要依赖dataSource -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- 配置通知,哪些方法,支持什么类型的事务 -->
+	<tx:advice id="advice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="save*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<!-- count query get -->
+			<tx:method name="*" propagation="SUPPORTS" />
+		</tx:attributes>
+	</tx:advice>
+	<!-- 配置哪些包的哪些类支持事务 -->
+	<aop:config>
+		<aop:pointcut expression="execution(* com.hbc.service.impl.*.*(..))" id="pointcut" />
+		<aop:advisor advice-ref="advice" pointcut-ref="pointcut" />
+	</aop:config>
+	
+	<!-- 支持注解@value注入, 不支持XML -->
+	<!-- <bean id="public" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="location" value="classpath:public.properties"/>
+	</bean> -->
+</beans>
